@@ -1,63 +1,48 @@
 <?php
-include 'config.php';
-
-$pdo = db();
-
-$id = isset($_GET['id']) ? intval($_GET['id']) : 0;
-if ($id <= 0) {
-    echo "<script>alert('Iklan tidak ditemukan!');window.location='index.php';</script>";
+session_start();
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
     exit;
 }
 
+include 'config.php';
+$pdo = db();
+
 try {
-    // Ambil data iklan menggunakan PDO
-    $sql = "SELECT ads.*, categories.name AS category_name, users.name AS user_name, users.whatsapp
-            FROM ads
-            JOIN categories ON ads.category_id = categories.id
-            JOIN users ON ads.user_id = users.id
-            WHERE ads.id = :id";
-    $stmt = $pdo->prepare($sql);
-    $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+    $user_id = $_SESSION['user_id'];
+    $stmt = $pdo->prepare("SELECT ads.*, 
+                          (SELECT image_path FROM ad_images WHERE ad_id=ads.id LIMIT 1) AS image_path, 
+                          categories.name AS category_name 
+                          FROM ads 
+                          JOIN categories ON ads.category_id=categories.id 
+                          WHERE ads.user_id=:user_id 
+                          ORDER BY ads.created_at DESC");
+    $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
     $stmt->execute();
-    $ad = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    if (!$ad) {
-        echo "<script>alert('Iklan tidak ditemukan!');window.location='index.php';</script>";
-        exit;
-    }
-
-    // Ambil gambar iklan menggunakan PDO
-    $img_stmt = $pdo->prepare("SELECT image_path FROM ad_images WHERE ad_id = :ad_id LIMIT 1");
-    $img_stmt->bindParam(':ad_id', $id, PDO::PARAM_INT);
-    $img_stmt->execute();
-    $img_row = $img_stmt->fetch(PDO::FETCH_ASSOC);
-    $image_path = $img_row ? 'uploads/' . $img_row['image_path'] : 'assets/images/noimage.png';
+    $ads = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch(PDOException $e) {
     die("Error: " . $e->getMessage());
 }
 ?>
 <!DOCTYPE html>
 <html lang="id">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo e($ad['title']); ?> - KF OLX</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Iklan Saya - KF OLX</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <style>
-        .ad-image {
+        .ad-thumb {
             width: 100%;
-            height: 550px;
+            height: 180px;
             object-fit: cover;
         }
     </style>
 </head>
-
 <body class="bg-gray-100 font-sans text-gray-800">
-
-      <nav class="bg-white shadow-md py-4" data-aos="fade-down" data-aos-duration="1000">
+     <nav class="bg-white shadow-md py-4" data-aos="fade-down" data-aos-duration="1000">
         <div class="container mx-auto flex items-center justify-between px-4">
             <a class="text-3xl font-bold text-teal-800 flex items-center gap-2" href="index.php">
                 <i class="fas fa-store"></i> KF OLX
@@ -114,70 +99,46 @@ try {
 
     <header class="bg-teal-800 text-white py-8 mb-8" data-aos="fade-up" data-aos-duration="1000">
         <div class="container mx-auto px-4">
-            <h1 class="text-xl font-bold">Detail Iklan <span class="text-teal-400">>></span></h1>
+            <h1 class="text-2xl font-bold">Iklan Saya</h1>
+            <p class="text-gray-300">Kelola iklan yang Anda pasang</p>
         </div>
     </header>
 
-    <main class="container mx-auto px-4">
-        <div class="flex flex-col lg:flex-row gap-8">
-            <div class="w-full lg:w-3/4">
-                <div class="bg-white rounded-xl shadow-md overflow-hidden mb-6" data-aos="fade-right" data-aos-delay="200">
-                    <img class="ad-image object-cover" src="<?php echo e($image_path); ?>" alt="Gambar Iklan">
-                </div>
-
-                <div class="bg-white rounded-xl shadow-md p-6" data-aos="fade-up" data-aos-delay="400">
-                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
-                        <h2 class="text-2xl font-bold text-gray-800"><?php echo e($ad['title']); ?></h2>
-                        <div class="text-3xl font-extrabold text-teal-800">Rp <?php echo number_format((float)$ad['price'], 0, ',', '.'); ?></div>
-                    </div>
-                    <div class="flex items-center text-gray-500 text-sm gap-4 mb-4">
-                        <div class="flex items-center gap-2"><i class="fas fa-map-marker-alt"></i> <?php echo e($ad['location']); ?></div>
-                        <div class="flex items-center gap-2"><i class="fas fa-tag"></i> <?php echo e($ad['category_name']); ?></div>
-                    </div>
-                    <hr class="border-gray-200 my-4" />
-                    <div>
-                        <h3 class="text-lg font-bold mb-2">Deskripsi</h3>
-                        <p class="text-gray-600 leading-relaxed"><?php echo nl2br(e($ad['description'])); ?></p>
-                    </div>
-                </div>
+    <main class="container mx-auto px-4 mb-10">
+        <?php if (empty($ads)): ?>
+            <div class="text-center py-10" data-aos="fade-up" data-aos-duration="1000">
+                <div class="text-6xl text-gray-400 mb-4"><i class="far fa-folder-open"></i></div>
+                <h2 class="text-xl font-semibold text-gray-700">Belum ada iklan</h2>
+                <p class="text-gray-500 mb-6">Pasang iklan pertama Anda sekarang.</p>
+                <a class="inline-block bg-yellow-400 hover:bg-yellow-500 text-teal-800 font-bold py-3 px-6 rounded-lg shadow transition-colors" href="post-add.php">
+                    <i class="fas fa-plus"></i> Pasang Iklan
+                </a>
             </div>
-
-            <div class="w-full lg:w-1/4 space-y-6">
-                <div class="bg-white rounded-xl shadow-md p-6" data-aos="fade-left" data-aos-delay="200">
-                    <div class="flex items-center gap-4 mb-4">
-                        <div class="w-14 h-14 bg-teal-100 rounded-full flex items-center justify-center text-teal-800 text-2xl">
-                            <i class="fas fa-user"></i>
-                        </div>
-                        <div>
-                            <div class="font-bold text-lg"><?php echo e($ad['user_name']); ?></div>
-                            <div class="text-gray-500 text-sm">Penjual</div>
-                        </div>
-                    </div>
-                    <div class="space-y-2">
-                        <?php if (isset($_SESSION['user_id']) && (int)$_SESSION['user_id'] !== (int)$ad['user_id'] && !empty($ad['whatsapp'])): ?>
-                            <?php $wa = '62' . ltrim(preg_replace('/[^0-9]/', '', (string)$ad['whatsapp']), '0'); ?>
-                            <a target="_blank" class="w-full block text-center bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-4 rounded-lg transition-colors" href="https://wa.me/<?php echo e($wa); ?>?text=<?php echo urlencode('Halo, saya tertarik dengan iklan Anda: ' . $ad['title']); ?>">
-                                <i class="fab fa-whatsapp"></i> Hubungi via WhatsApp
+        <?php else: ?>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <?php foreach ($ads as $row): ?>
+                    <div class="ad-card bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-transform hover:-translate-y-1 duration-200" data-aos="fade-up" data-aos-duration="800">
+                        <?php $img = $row['image_path'] ? 'uploads/' . $row['image_path'] : 'assets/images/noimage.png'; ?>
+                        <a href="detail.php?id=<?php echo (int)$row['id']; ?>" class="block">
+                            <img class="ad-thumb object-cover" src="<?php echo $img; ?>" alt="Gambar Iklan">
+                            <div class="p-4">
+                                <h3 class="ad-title text-base font-semibold text-gray-800 truncate"><?php echo htmlspecialchars($row['title']); ?></h3>
+                                <div class="ad-price text-xl font-bold text-teal-800 mt-1">Rp <?php echo number_format((float)$row['price'], 0, ',', '.'); ?></div>
+                                <div class="ad-location text-gray-500 text-sm mt-1"><i class="fas fa-map-marker-alt"></i> <?php echo htmlspecialchars($row['location']); ?></div>
+                            </div>
+                        </a>
+                        <div class="flex gap-2 p-4 pt-0">
+                            <a href="edit_ad.php?id=<?php echo (int)$row['id']; ?>" class="w-full text-center bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg text-sm transition-colors">
+                                <i class="fas fa-edit"></i> Edit
                             </a>
-                        <?php else: ?>
-                            <button class="w-full block text-center bg-gray-300 text-gray-600 font-semibold py-3 px-4 rounded-lg cursor-not-allowed" disabled>
-                                <i class="fab fa-whatsapp"></i> WhatsApp tidak tersedia
-                            </button>
-                        <?php endif; ?>
+                            <a href="delete_ad.php?id=<?php echo (int)$row['id']; ?>" class="w-full text-center bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-lg text-sm transition-colors" onclick="return confirm('Yakin ingin menghapus iklan ini?')">
+                                <i class="fas fa-trash"></i> Hapus
+                            </a>
+                        </div>
                     </div>
-                </div>
-
-                <div class="bg-white rounded-xl shadow-md p-6" data-aos="fade-left" data-aos-delay="400">
-                    <h3 class="text-lg font-bold mb-3">Tips Keamanan</h3>
-                    <ul class="text-gray-500 text-sm list-disc list-inside space-y-2">
-                        <li>Temui penjual di tempat umum yang ramai.</li>
-                        <li>Periksa barang sebelum membeli.</li>
-                        <li>Hindari pembayaran di muka tanpa jaminan.</li>
-                        <li>Gunakan fitur chat untuk komunikasi awal.</li>
-                    </ul>
-                </div>
+                <?php endforeach; ?>
             </div>
-        </div>
+        <?php endif; ?>
     </main>
 
     <footer class="bg-teal-800 text-gray-300 py-12 mt-12" data-aos="fade-up">
@@ -232,13 +193,13 @@ try {
             </div>
         </div>
     </footer>
-
+    
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
         AOS.init({
             once: true,
         });
-
+        
         // Toggle mobile menu
         const mobileMenuButton = document.getElementById('mobile-menu-button');
         const mobileMenu = document.getElementById('mobile-menu');
@@ -247,5 +208,4 @@ try {
         });
     </script>
 </body>
-
 </html>

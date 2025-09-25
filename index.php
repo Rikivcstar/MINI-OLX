@@ -74,120 +74,106 @@ try {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KF OLX - Jual Beli Online Terpercaya</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <style>
-        :root {
-            --primary-color: #002f34;
-            --secondary-color: #23e5db;
-            --accent-color: #ffce32;
-            --text-dark: #002f34;
-            --text-light: #7c8a97;
-            --border-color: #e6e8ea;
+        .ad-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
         }
-
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: var(--text-dark); }
-        .navbar-brand { font-weight: bold; font-size: 2rem; color: var(--primary-color) !important; }
-        .navbar { background-color: white !important; box-shadow: 0 2px 4px rgba(0,0,0,0.1); padding: 1rem 0; }
-        .hero-section { background: linear-gradient(135deg, var(--primary-color) 0%, #004d56 100%); color: white; padding: 4rem 0; margin-bottom: 3rem; }
-        .search-container { background: white; border-radius: 8px; padding: 2rem; box-shadow: 0 4px 20px rgba(0,0,0,0.1); margin-top: 2rem; }
-        .search-input { border: 2px solid var(--border-color); border-radius: 6px; padding: 12px 16px; font-size: 16px; }
-        .search-input:focus { border-color: var(--secondary-color); box-shadow: 0 0 0 0.2rem rgba(35, 229, 219, 0.25); }
-        .btn-search { background-color: var(--secondary-color); border: none; color: var(--primary-color); font-weight: 600; padding: 12px 24px; border-radius: 6px; }
-        .btn-search:hover { background-color: #1bc5bb; color: var(--primary-color); }
-        .btn-post-ad { background-color: var(--accent-color); border: none; color: var(--primary-color); font-weight: 600; padding: 10px 20px; border-radius: 6px; }
-        .btn-post-ad:hover { background-color: #e6b82e; color: var(--primary-color); }
-        .category-card { background: white; border: 1px solid var(--border-color); border-radius: 8px; padding: 1.5rem; text-align: center; transition: all 0.3s ease; cursor: pointer; height: 100%; }
-        .category-card:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.1); border-color: var(--secondary-color); }
-        .category-icon { font-size: 2rem; color: var(--secondary-color); margin-bottom: 0.75rem; }
-        .category-name { font-weight: 600; color: var(--text-dark); margin-bottom: 0.25rem; }
-        .ad-card { background: white; border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; transition: all 0.3s ease; cursor: pointer; height: 100%; }
-        .ad-card:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
-        .ad-image { width: 100%; height: 200px; object-fit: cover; background-color: #f8f9fa; }
-        .ad-content { padding: 1rem; }
-        .ad-title { font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; font-size: 1rem; }
-        .ad-price { font-size: 1.25rem; font-weight: bold; color: var(--primary-color); margin-bottom: 0.5rem; }
-        .ad-location { color: var(--text-light); font-size: 0.875rem; }
-        .section-title { font-size: 1.75rem; font-weight: bold; color: var(--text-dark); margin-bottom: 2rem; }
-        .footer { background-color: var(--primary-color); color: white; padding: 3rem 0 1rem; margin-top: 4rem; }
-        .footer-link { color: #b3c5c8; text-decoration: none; transition: color 0.3s ease; }
-        .footer-link:hover { color: var(--secondary-color); }
     </style>
 </head>
 
-<body>
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-light">
-        <div class="container">
-            <a class="navbar-brand" href="index.php">
+<body class="bg-gray-100 font-sans text-gray-800">
+
+    <nav class="bg-white shadow-md py-4" data-aos="fade-down" data-aos-duration="1000">
+        <div class="container mx-auto flex items-center justify-between px-4">
+            <a class="text-3xl font-bold text-teal-800 flex items-center gap-2" href="index.php">
                 <i class="fas fa-store"></i> KF OLX
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item"><a class="nav-link" href="index.php">Beranda</a></li>
-                    <li class="nav-item"><a class="nav-link" href="categories.php">Kategori</a></li>
-                    <li class="nav-item"><a class="nav-link" href="about.php">Tentang</a></li>
-                </ul>
-                <ul class="navbar-nav">
-                    <?php if (isset($_SESSION['user_id'])): ?>
-                        <li class="nav-item"><span class="nav-link">Halo, <?php echo e($_SESSION['user_name'] ?? 'Pengguna'); ?></span></li>
-                        <li class="nav-item ms-2"><a class="btn btn-post-ad" href="post-add.php"><i class="fas fa-plus"></i> Pasang Iklan</a></li>
-                        <li class="nav-item ms-2"><a class="nav-link" href="logout.php">Keluar</a></li>
-                    <?php else: ?>
-                        <li class="nav-item"><a class="nav-link" href="login.php"><i class="fas fa-sign-in-alt"></i> Masuk</a></li>
-                        <li class="nav-item"><a class="nav-link" href="register.php"><i class="fas fa-user-plus"></i> Daftar</a></li>
-                        <li class="nav-item ms-2"><a class="btn btn-post-ad" href="post-add.php"><i class="fas fa-plus"></i> Pasang Iklan</a></li>
-                    <?php endif; ?>
-                </ul>
+            <div class="hidden md:flex items-center space-x-6">
+                <a class="text-teal-800 hover:text-teal-600 font-medium transition-colors" href="index.php">
+                    <i class="fas fa-house"></i> Beranda
+                </a>
+                <?php if (isset($_SESSION['user_id'])): ?>
+                    <a class="text-teal-800 hover:text-teal-600 font-medium transition-colors" href="my_ads.php">
+                        <i class="fas fa-eye"></i> Iklan Saya
+                    </a>
+                    <a class="text-teal-800 hover:text-teal-600 font-medium transition-colors" href="post-add.php">
+                        <i class="fas fa-plus"></i> Pasang Iklan
+                    </a>
+                    <a class="text-teal-800 hover:text-teal-600 font-medium transition-colors" href="profile.php">
+                        <i class="fas fa-user"></i> Profile
+                    </a>
+                    <span class="text-gray-600 font-medium">Halo <?php echo e($_SESSION['user_name'] ?? 'Pengguna'); ?> 🥷</span>
+                    <a class="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded transition-colors" href="logout.php">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                <?php else: ?>
+                    <a class="text-teal-800 hover:text-teal-600 font-medium transition-colors" href="login.php">
+                        <i class="fas fa-sign-in-alt"></i> Masuk
+                    </a>
+                    <a class="text-teal-800 hover:text-teal-600 font-medium transition-colors" href="register.php">
+                        <i class="fas fa-user-plus"></i> Daftar
+                    </a>
+                    <a class="bg-yellow-400 hover:bg-yellow-500 text-teal-800 font-bold py-2 px-4 rounded shadow transition-colors" href="post-add.php">
+                        <i class="fas fa-plus"></i> Pasang Iklan
+                    </a>
+                <?php endif; ?>
             </div>
+            <button class="md:hidden text-gray-600" id="mobile-menu-button">
+                <i class="fas fa-bars text-2xl"></i>
+            </button>
+        </div>
+        <div id="mobile-menu" class="hidden md:hidden px-4 pt-2 pb-4 space-y-1 bg-white shadow-lg">
+             <a class="block text-teal-800 hover:text-teal-600 font-medium py-2" href="index.php">Beranda</a>
+             <?php if (isset($_SESSION['user_id'])): ?>
+                <a class="block text-teal-800 hover:text-teal-600 font-medium py-2" href="my_ads.php">Iklan Saya</a>
+                <a class="block text-teal-800 hover:text-teal-600 font-medium py-2" href="post-add.php">Pasang Iklan</a>
+                <a class="block text-teal-800 hover:text-teal-600 font-medium py-2" href="profile.php">Profile</a>
+                <span class="block text-gray-600 font-medium py-2">Halo <?php echo e($_SESSION['user_name'] ?? 'Pengguna'); ?> 🥷</span>
+                <a class="block bg-red-500 hover:bg-red-600 text-white font-semibold text-center py-2 rounded" href="logout.php">Logout</a>
+             <?php else: ?>
+                <a class="block text-teal-800 hover:text-teal-600 font-medium py-2" href="login.php">Masuk</a>
+                <a class="block text-teal-800 hover:text-teal-600 font-medium py-2" href="register.php">Daftar</a>
+                <a class="block bg-yellow-400 hover:bg-yellow-500 text-teal-800 font-bold text-center py-2 rounded" href="post-add.php">Pasang Iklan</a>
+             <?php endif; ?>
         </div>
     </nav>
-
-    <!-- Hero Section with Search -->
-    <section class="hero-section">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-lg-6">
-                    <h1 class="display-5 fw-bold mb-3">Jual Beli Online Terpercaya di Indonesia</h1>
-                    <p class="lead mb-4">Temukan ribuan produk berkualitas. Jual barang bekas atau baru dengan mudah dan aman.</p>
+    
+    <section class="bg-teal-800 text-white py-16 mb-12" data-aos="fade-up" data-aos-duration="1000">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-wrap items-center">
+                <div class="w-full lg:w-1/2" data-aos="fade-right" data-aos-delay="300">
+                    <h1 class="text-4xl lg:text-5xl font-extrabold mb-4">Jual Beli Online Terpercaya di Indonesia</h1>
+                    <p class="text-lg mb-6 text-gray-200">Temukan ribuan produk berkualitas. Jual barang bekas atau baru dengan mudah dan aman.</p>
                 </div>
-                <div class="col-lg-6">
-                    <div class="search-container">
-                        <h3 class="text-dark mb-3">Cari Produk</h3>
+                <div class="w-full lg:w-1/2 mt-8 lg:mt-0" data-aos="fade-left" data-aos-delay="300">
+                    <div class="bg-white bg-opacity-10 rounded-xl p-8 shadow-xl">
+                        <h3 class="text-white text-2xl font-bold mb-4">Cari Produk</h3>
                         <form action="index.php" method="GET">
-                            <div class="row g-2">
-                                <div class="col-md-6">
-                                    <input type="text" class="form-control search-input" name="title" placeholder="Judul barang..." value="<?php echo e($_GET['title'] ?? ''); ?>">
-                                </div>
-                                <div class="col-md-6">
-                                    <select class="form-select" name="category_id">
-                                        <option value="">Semua Kategori</option>
-                                        <?php foreach ($categories as $cat): ?>
-                                            <option value="<?php echo (int)$cat['id']; ?>" <?php echo (isset($_GET['category_id']) && (int)$_GET['category_id'] === (int)$cat['id']) ? 'selected' : ''; ?>>
-                                                <?php echo e($cat['name']); ?>
-                                            </option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="row g-2 mt-2">
-                                <div class="col-md-8">
-                                    <select class="form-select" name="location">
-                                        <option value="">Semua Lokasi</option>
-                                        <?php foreach ($locations as $loc): ?>
-                                            <option value="<?php echo e($loc); ?>" <?php echo (isset($_GET['location']) && $_GET['location'] === $loc) ? 'selected' : ''; ?>>
-                                                <?php echo e($loc); ?>
-                                            </option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                </div>
-                                <div class="col-md-4">
-                                    <button type="submit" class="btn btn-search w-100">
-                                        <i class="fas fa-search"></i> Cari
-                                    </button>
-                                </div>
+                            <div class="space-y-4">
+                                <input type="text" class="w-full p-3 rounded-lg border-2 border-gray-300 focus:outline-none focus:ring-2 focus:ring-teal-400 text-gray-800" name="title" placeholder="Judul barang..." value="<?php echo e($_GET['title'] ?? ''); ?>">
+                                <select class="w-full p-3 rounded-lg border-2 border-gray-300 focus:outline-none focus:ring-2 focus:ring-teal-400 text-gray-800" name="category_id">
+                                    <option value="">Semua Kategori</option>
+                                    <?php foreach ($categories as $cat): ?>
+                                        <option value="<?php echo (int)$cat['id']; ?>" <?php echo (isset($_GET['category_id']) && (int)$_GET['category_id'] === (int)$cat['id']) ? 'selected' : ''; ?>>
+                                            <?php echo e($cat['name']); ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                                <select class="w-full p-3 rounded-lg border-2 border-gray-300 focus:outline-none focus:ring-2 focus:ring-teal-400 text-gray-800" name="location">
+                                    <option value="">Semua Lokasi</option>
+                                    <?php foreach ($locations as $loc): ?>
+                                        <option value="<?php echo e($loc); ?>" <?php echo (isset($_GET['location']) && $_GET['location'] === $loc) ? 'selected' : ''; ?>>
+                                            <?php echo e($loc); ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                                <button type="submit" class="w-full bg-teal-400 hover:bg-teal-500 text-teal-800 font-bold py-3 px-4 rounded-lg shadow transition-colors">
+                                    <i class="fas fa-search"></i> Cari
+                                </button>
                             </div>
                         </form>
                     </div>
@@ -196,111 +182,116 @@ try {
         </div>
     </section>
 
-    <!-- Categories Section -->
-    <section class="container mb-5">
-        <h2 class="section-title text-center">Kategori Populer</h2>
-        <div class="row g-4">
+    <section class="container mx-auto px-4 mb-12" data-aos="fade-up">
+        <h2 class="text-3xl font-bold text-center mb-8" data-aos="fade-up">Kategori Populer</h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
             <?php foreach ($categories as $cat): ?>
-                <div class="col-lg-2 col-md-4 col-6">
-                    <a href="index.php?category_id=<?php echo (int)$cat['id']; ?>" class="text-decoration-none text-reset">
-                        <div class="category-card h-100">
-                            <div class="category-icon"><i class="fas fa-tag"></i></div>
-                            <div class="category-name"><?php echo e($cat['name']); ?></div>
-                            <small class="text-muted">Jelajahi</small>
+                <a href="index.php?category_id=<?php echo (int)$cat['id']; ?>" class="block text-center no-underline" data-aos="zoom-in-up" data-aos-delay="100">
+                    <div class="bg-white rounded-lg p-6 shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 hover:border-teal-400 border border-transparent">
+                        <div class="text-4xl text-teal-500 mb-2">
+                            <i class="fas fa-tag"></i>
                         </div>
-                    </a>
-                </div>
+                        <div class="font-semibold text-gray-800 mb-1"><?php echo e($cat['name']); ?></div>
+                        <small class="text-gray-500">Jelajahi</small>
+                    </div>
+                </a>
             <?php endforeach; ?>
         </div>
     </section>
 
-    <!-- Featured Ads Section -->
-    <section class="container mb-5">
-        <h2 class="section-title">Iklan Terbaru</h2>
-
+    <section class="container mx-auto px-4 mb-12" data-aos="fade-up" data-aos-delay="200">
+        <h2 class="text-3xl font-bold mb-6" data-aos="fade-up">Iklan Terbaru</h2>
         <?php
         $info = [];
         if (isset($_GET['title']) && $_GET['title'] != '') $info[] = 'Judul: <b>' . e($_GET['title']) . '</b>';
         if (isset($_GET['location']) && $_GET['location'] != '') $info[] = 'Lokasi: <b>' . e($_GET['location']) . '</b>';
         if (isset($_GET['category_id']) && $_GET['category_id'] != '') $info[] = 'Kategori: <b>' . e($cat_name) . '</b>';
-        if ($info) echo '<p>' . implode(', ', $info) . '</p>';
+        if ($info) echo '<p class="text-gray-600 mb-4" data-aos="fade-right">' . implode(', ', $info) . '</p>';
         ?>
 
-        <div class="row g-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             <?php foreach ($ads as $row): ?>
-                <div class="col-lg-3 col-md-6">
-                    <a class="text-decoration-none" href="detail.php?id=<?php echo (int)$row['id']; ?>">
-                        <div class="ad-card">
-                            <?php $img = $row['image_path'] ? 'uploads/' . $row['image_path'] : 'assets/images/noimage.png'; ?>
-                            <img class="ad-image" src="<?php echo e($img); ?>" alt="Gambar Iklan">
-                            <div class="ad-content">
-                                <div class="ad-title"><?php echo e($row['title']); ?></div>
-                                <div class="ad-price">Rp <?php echo number_format((float)$row['price'], 0, ',', '.'); ?></div>
-                                <div class="ad-location"><i class="fas fa-map-marker-alt"></i> <?php echo e($row['location']); ?></div>
-                            </div>
+                <a class="block no-underline" href="detail.php?id=<?php echo (int)$row['id']; ?>" data-aos="fade-up">
+                    <div class="bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden">
+                        <?php $img = $row['image_path'] ? 'uploads/' . $row['image_path'] : 'assets/images/noimage.png'; ?>
+                        <img class="ad-image bg-gray-200" src="<?php echo e($img); ?>" alt="Gambar Iklan">
+                        <div class="p-4">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-1"><?php echo e($row['title']); ?></h3>
+                            <div class="text-xl font-bold text-teal-800 mb-2">Rp <?php echo number_format((float)$row['price'], 0, ',', '.'); ?></div>
+                            <div class="text-sm text-gray-500"><i class="fas fa-map-marker-alt"></i> <?php echo e($row['location']); ?></div>
                         </div>
-                    </a>
-                </div>
+                    </div>
+                </a>
             <?php endforeach; ?>
         </div>
     </section>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-4 mb-4">
-                    <h5 class="mb-3"><i class="fas fa-store"></i> KF OLX</h5>
-                    <p class="text-muted">Platform jual beli online terpercaya di Indonesia. Jual dan beli dengan mudah, aman, dan terpercaya.</p>
+    <footer class="bg-teal-800 text-gray-300 py-12" data-aos="fade-up">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-8">
+                <div>
+                    <h5 class="text-xl font-bold text-white mb-4"><i class="fas fa-store"></i> KF OLX</h5>
+                    <p class="text-sm">Platform jual beli online terpercaya di Indonesia. Jual dan beli dengan mudah, aman, dan terpercaya.</p>
                 </div>
-                <div class="col-lg-2 col-md-6 mb-4">
-                    <h6 class="mb-3">Kategori</h6>
-                    <ul class="list-unstyled">
-                        <li><a href="#" class="footer-link">Mobil</a></li>
-                        <li><a href="#" class="footer-link">Motor</a></li>
-                        <li><a href="#" class="footer-link">Handphone</a></li>
-                        <li><a href="#" class="footer-link">Elektronik</a></li>
-                        <li><a href="#" class="footer-link">Properti</a></li>
+                <div>
+                    <h6 class="text-lg font-bold text-white mb-4">Kategori</h6>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="hover:text-teal-400 transition-colors">Mobil</a></li>
+                        <li><a href="#" class="hover:text-teal-400 transition-colors">Motor</a></li>
+                        <li><a href="#" class="hover:text-teal-400 transition-colors">Handphone</a></li>
+                        <li><a href="#" class="hover:text-teal-400 transition-colors">Elektronik</a></li>
+                        <li><a href="#" class="hover:text-teal-400 transition-colors">Properti</a></li>
                     </ul>
                 </div>
-                <div class="col-lg-2 col-md-6 mb-4">
-                    <h6 class="mb-3">Bantuan</h6>
-                    <ul class="list-unstyled">
-                        <li><a href="#" class="footer-link">Cara Jual</a></li>
-                        <li><a href="#" class="footer-link">Cara Beli</a></li>
-                        <li><a href="#" class="footer-link">Tips Aman</a></li>
-                        <li><a href="#" class="footer-link">FAQ</a></li>
-                        <li><a href="#" class="footer-link">Kontak</a></li>
+                <div>
+                    <h6 class="text-lg font-bold text-white mb-4">Bantuan</h6>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="hover:text-teal-400 transition-colors">Cara Jual</a></li>
+                        <li><a href="#" class="hover:text-teal-400 transition-colors">Cara Beli</a></li>
+                        <li><a href="#" class="hover:text-teal-400 transition-colors">Tips Aman</a></li>
+                        <li><a href="#" class="hover:text-teal-400 transition-colors">FAQ</a></li>
+                        <li><a href="#" class="hover:text-teal-400 transition-colors">Kontak</a></li>
                     </ul>
                 </div>
-                <div class="col-lg-2 col-md-6 mb-4">
-                    <h6 class="mb-3">Perusahaan</h6>
-                    <ul class="list-unstyled">
-                        <li><a href="#" class="footer-link">Tentang Kami</a></li>
-                        <li><a href="#" class="footer-link">Karir</a></li>
-                        <li><a href="#" class="footer-link">Blog</a></li>
-                        <li><a href="#" class="footer-link">Press</a></li>
+                <div>
+                    <h6 class="text-lg font-bold text-white mb-4">Perusahaan</h6>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="hover:text-teal-400 transition-colors">Tentang Kami</a></li>
+                        <li><a href="#" class="hover:text-teal-400 transition-colors">Karir</a></li>
+                        <li><a href="#" class="hover:text-teal-400 transition-colors">Blog</a></li>
+                        <li><a href="#" class="hover:text-teal-400 transition-colors">Press</a></li>
                     </ul>
                 </div>
-                <div class="col-lg-2 col-md-6 mb-4">
-                    <h6 class="mb-3">Legal</h6>
-                    <ul class="list-unstyled">
-                        <li><a href="#" class="footer-link">Syarat & Ketentuan</a></li>
-                        <li><a href="#" class="footer-link">Kebijakan Privasi</a></li>
-                        <li><a href="#" class="footer-link">Panduan Komunitas</a></li>
+                <div>
+                    <h6 class="text-lg font-bold text-white mb-4">Legal</h6>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="hover:text-teal-400 transition-colors">Syarat & Ketentuan</a></li>
+                        <li><a href="#" class="hover:text-teal-400 transition-colors">Kebijakan Privasi</a></li>
+                        <li><a href="#" class="hover:text-teal-400 transition-colors">Panduan Komunitas</a></li>
                     </ul>
                 </div>
             </div>
-            <hr class="my-4" style="border-color: #4a5c6a;">
-            <div class="row align-items-center">
-                <div class="col-md-6"><p class="text-muted mb-0">&copy; 2025 KF OLX. Semua hak dilindungi.</p></div>
-                <div class="col-md-6 text-md-end"><p class="text-muted mb-0">Made with <i class="fas fa-heart text-danger"></i> in Indonesia</p></div>
+            <hr class="my-8 border-gray-700">
+            <div class="flex flex-col md:flex-row items-center justify-between text-sm text-gray-500">
+                <p class="mb-2 md:mb-0">&copy; 2025 KF OLX. Semua hak dilindungi.</p>
+                <p>Made with <i class="fas fa-heart text-red-500"></i> in Indonesia</p>
             </div>
         </div>
     </footer>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({
+            once: true, // Animasi hanya berjalan sekali saat pertama kali elemen terlihat
+        });
+
+        // Toggle mobile menu
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+    </script>
 </body>
 
 </html>

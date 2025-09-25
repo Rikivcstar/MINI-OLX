@@ -59,181 +59,227 @@ if (!$alreadyLoggedIn && $_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Masuk - KF OLX</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <style>
-        :root { --primary-color:#002f34; --secondary-color:#23e5db; --accent-color:#ffce32; --text-dark:#002f34; --text-light:#7c8a97; --border-color:#e6e8ea; }
-        body { font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color:var(--text-dark); background-color:#fff; }
-        .navbar-brand { font-weight:bold; font-size:2rem; color:var(--primary-color) !important; }
-        .navbar { background:#fff !important; box-shadow:0 2px 4px rgba(0,0,0,.1); padding:1rem 0; }
-        .page-header { background:linear-gradient(135deg, var(--primary-color) 0%, #004d56 100%); color:#fff; padding:2.5rem 0; margin-bottom:2rem; }
-        .auth-card { border:1px solid var(--border-color); border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,.06); }
-        .form-control:focus, .form-check-input:focus, .form-select:focus { border-color:var(--secondary-color); box-shadow:0 0 0 .2rem rgba(35,229,219,.25); }
-        .btn-primary-custom { background:var(--secondary-color); color:var(--primary-color); border:none; font-weight:700; }
-        .btn-primary-custom:hover { background:#1bc5bb; color:var(--primary-color); }
-        .btn-cta { background:var(--accent-color); border:none; color:var(--primary-color); font-weight:700; }
-        .btn-cta:hover { background:#e6b82e; color:var(--primary-color); }
-        .footer { background:var(--primary-color); color:#fff; padding:3rem 0 1rem; margin-top:4rem; }
-        .footer-link { color:#b3c5c8; text-decoration:none; transition:color .3s ease; }
-        .footer-link:hover { color:var(--secondary-color); }
-        .divider-text { position:relative; text-align:center; margin:1.5rem 0; color:var(--text-light); font-size:.9rem; }
-        .divider-text::before, .divider-text::after { content:""; position:absolute; top:50%; width:40%; height:1px; background:var(--border-color); }
-        .divider-text::before { left:0; } .divider-text::after { right:0; }
-    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 </head>
-<body>
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-light">
-        <div class="container">
-            <a class="navbar-brand" href="index.php"><i class="fas fa-store"></i> KF OLX</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"><span class="navbar-toggler-icon"></span></button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item"><a class="nav-link" href="index.php">Beranda</a></li>
-                    <li class="nav-item"><a class="nav-link" href="categories.php">Kategori</a></li>
-                    <li class="nav-item"><a class="nav-link" href="about.php">Tentang</a></li>
-                </ul>
-                <ul class="navbar-nav">
-                    <li class="nav-item"><a class="btn btn-cta" href="post-add.php"><i class="fas fa-plus"></i> Pasang Iklan</a></li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+<body class="bg-gray-100 font-sans text-gray-800">
+   <nav class="bg-white shadow-md py-4" data-aos="fade-down" data-aos-duration="1000">
+        <div class="container mx-auto flex items-center justify-between px-4">
+            <a class="text-3xl font-bold text-teal-800 flex items-center gap-2" href="index.php">
+                <i class="fas fa-store"></i> KF OLX
+            </a>
+            <div class="hidden md:flex items-center space-x-6">
 
-    <!-- Header -->
-    <header class="page-header">
-        <div class="container">
-            <h1 class="h3 m-0">Masuk ke KF OLX</h1>
-            <p class="m-0 text-light">Akses akun Anda untuk mulai jual beli dengan mudah</p>
+                   
+                    <a class="text-teal-800 hover:text-teal-600 font-medium transition-colors" href="login.php">
+                        <i class="fas fa-sign-in-alt"></i> Masuk
+                    </a>
+                    <a class="text-teal-800 hover:text-teal-600 font-medium transition-colors" href="register.php">
+                        <i class="fas fa-user-plus"></i> Daftar
+                    </a>
+                    <a class="bg-yellow-400 hover:bg-yellow-500 text-teal-800 font-bold py-2 px-4 rounded shadow transition-colors" href="post-add.php">
+                        <i class="fas fa-plus"></i> Pasang Iklan
+                    </a>
+            
+            </div>
+            <button class="md:hidden text-gray-600" id="mobile-menu-button">
+                <i class="fas fa-bars text-2xl"></i>
+            </button>
+        </div>
+        <div id="mobile-menu" class="hidden md:hidden px-4 pt-2 pb-4 space-y-1 bg-white shadow-lg">
+             
+                <a class="block text-teal-800 hover:text-teal-600 font-medium py-2" href="login.php">Masuk</a>
+                <a class="block text-teal-800 hover:text-teal-600 font-medium py-2" href="register.php">Daftar</a>
+                <a class="block bg-yellow-400 hover:bg-yellow-500 text-teal-800 font-bold text-center py-2 rounded" href="post-add.php">Pasang Iklan</a>
+             
+        </div>
+  </nav>
+
+    <header class="bg-teal-800 text-white py-8 mb-8" data-aos="fade-up" data-aos-duration="1000">
+        <div class="container mx-auto px-4">
+            <h1 class="text-2xl font-bold">Masuk ke KF OLX</h1>
+            <p class="text-gray-300">Akses akun Anda untuk mulai jual beli dengan mudah</p>
         </div>
     </header>
 
-    <!-- Login Form -->
-    <main class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-6 col-lg-5">
-                <div class="card auth-card p-4">
-                    <div class="d-flex align-items-center mb-3">
-                        <div class="me-2" style="width: 40px; height: 40px; border-radius: 8px; background:#eaf6f7; display:flex; align-items:center; justify-content:center; color:var(--primary-color)"><i class="fas fa-user"></i></div>
-                        <h2 class="h5 m-0">Masuk</h2>
+    <main class="container mx-auto px-4 mb-10">
+        <div class="flex justify-center">
+            <div class="w-full md:w-1/2 lg:w-2/5">
+                <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-200" data-aos="fade-up" data-aos-duration="1000">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="w-16 h-16 rounded-full bg-teal-50 flex items-center justify-center text-teal-800 text-3xl">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-2xl font-bold">Masuk</h2>
+                            <p class="text-gray-500">Isi data di bawah untuk masuk ke akun Anda</p>
+                        </div>
                     </div>
 
                     <?php if ($justRegistered && !$alreadyLoggedIn): ?>
-                        <div class="alert alert-success" role="alert">
+                        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-6" role="alert" data-aos="fade-down">
                             Pendaftaran berhasil. Silakan masuk menggunakan email dan kata sandi Anda.
                         </div>
                     <?php endif; ?>
 
                     <?php if (!$alreadyLoggedIn && !empty($errors)): ?>
-                        <div class="alert alert-danger" role="alert">
-                            <ul class="mb-0 ps-3">
+                        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-6" role="alert" data-aos="fade-down">
+                            <div class="font-semibold mb-1">Login gagal:</div>
+                            <ul class="list-disc list-inside mb-0">
                                 <?php foreach ($errors as $err): ?>
-                                    <li><?php echo e($err); ?></li>
+                                    <li><?php echo htmlspecialchars($err, ENT_QUOTES, 'UTF-8'); ?></li>
                                 <?php endforeach; ?>
                             </ul>
                         </div>
                     <?php endif; ?>
 
-                    <form action="login.php" method="post" novalidate>
-                        <div class="mb-3">
-                            <label for="email" class="form-label">Email</label>
-                            <input type="email" class="form-control" id="email" name="email" placeholder="nama@email.com" value="<?php echo e($old['email']); ?>" required>
-                            <div class="invalid-feedback">Silakan masukkan email yang valid.</div>
+                    <form action="login.php" method="post" novalidate class="space-y-6">
+                        <div>
+                            <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                            <input type="email" class="w-full border border-gray-200 rounded-lg shadow-sm py-3 px-4 focus:border-teal-400 focus:ring-1 focus:ring-teal-200 transition-all duration-200" id="email" name="email" placeholder="nama@email.com" value="<?php echo htmlspecialchars($old['email'], ENT_QUOTES, 'UTF-8'); ?>" required />
                         </div>
-                        <div class="mb-2">
-                            <label for="password" class="form-label">Kata Sandi</label>
-                            <input type="password" class="form-control" id="password" name="password" placeholder="••••••••" required>
-                            <div class="invalid-feedback">Kata sandi wajib diisi.</div>
+                        <div>
+                            <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Kata Sandi</label>
+                            <input type="password" class="w-full border border-gray-200 rounded-lg shadow-sm py-3 px-4 focus:border-teal-400 focus:ring-1 focus:ring-teal-200 transition-all duration-200" id="password" name="password" placeholder="••••••••" required />
                         </div>
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value="1" id="rememberMe" name="remember">
-                                <label class="form-check-label" for="rememberMe">Ingat saya</label>
+                        
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <input type="checkbox" class="h-4 w-4 text-teal-600 border-gray-300 rounded focus:ring-teal-500" id="rememberMe" name="remember" />
+                                <label for="rememberMe" class="ml-2 block text-sm text-gray-900">Ingat saya</label>
                             </div>
-                            <a href="#" class="text-decoration-none" style="color:var(--secondary-color)">Lupa kata sandi?</a>
+                            <a href="#" class="text-sm text-teal-600 hover:text-teal-800 font-medium transition-colors">Lupa kata sandi?</a>
                         </div>
-
-                        <button type="submit" class="btn btn-primary-custom w-100">Masuk</button>
-
-                        <div class="divider-text">atau</div>
-
-                        <div class="d-grid gap-2">
-                            <button type="button" class="btn btn-outline-secondary"><i class="fab fa-google me-2"></i> Masuk dengan Google</button>
-                            <button type="button" class="btn btn-outline-secondary"><i class="fab fa-facebook me-2"></i> Masuk dengan Facebook</button>
-                        </div>
-
-                        <p class="text-center mt-3 mb-0">Belum punya akun? <a href="register.php" class="text-decoration-none" style="color:var(--secondary-color)">Daftar sekarang</a></p>
+                        
+                        <button type="submit" class="w-full bg-teal-500 hover:bg-teal-600 text-white font-semibold py-3 px-4 rounded-full shadow transition-colors duration-200">
+                            Masuk
+                        </button>
                     </form>
+
+                    <div class="relative flex items-center justify-center my-6">
+                        <span class="absolute px-3 bg-white text-gray-400 text-sm">atau</span>
+                        <div class="flex-grow border-t border-gray-200"></div>
+                    </div>
+
+                    <div class="space-y-3">
+                        <button type="button" class="w-full flex items-center justify-center gap-2 bg-gray-50 text-gray-700 font-medium py-3 px-4 rounded-full border border-gray-200 shadow-sm hover:bg-gray-100 transition-colors duration-200">
+                            <i class="fab fa-google text-red-500"></i> Masuk dengan Google
+                        </button>
+                        <button type="button" class="w-full flex items-center justify-center gap-2 bg-gray-50 text-gray-700 font-medium py-3 px-4 rounded-full border border-gray-200 shadow-sm hover:bg-gray-100 transition-colors duration-200">
+                            <i class="fab fa-facebook text-blue-600"></i> Masuk dengan Facebook
+                        </button>
+                    </div>
+
+                    <p class="text-center mt-6 text-gray-600">
+                        Belum punya akun? <a href="register.php" class="text-teal-600 hover:text-teal-800 font-medium transition-colors">Daftar sekarang</a>
+                    </p>
                 </div>
             </div>
         </div>
     </main>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-4 mb-4">
-                    <h5 class="mb-3"><i class="fas fa-store"></i> KF OLX</h5>
-                    <p class="text-muted">Platform jual beli online terpercaya di Indonesia. Jual dan beli dengan mudah, aman, dan terpercaya.</p>
+    <footer class="bg-teal-800 text-gray-300 py-12 mt-12" data-aos="fade-up">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-8">
+                <div>
+                    <h5 class="text-xl font-bold text-white mb-4"><i class="fas fa-store"></i> KF OLX</h5>
+                    <p class="text-sm">Platform jual beli online terpercaya di Indonesia. Jual dan beli dengan mudah, aman, dan terpercaya.</p>
                 </div>
-                <div class="col-lg-2 col-md-6 mb-4">
-                    <h6 class="mb-3">Kategori</h6>
-                    <ul class="list-unstyled">
-                        <li><a href="#" class="footer-link">Mobil</a></li>
-                        <li><a href="#" class="footer-link">Motor</a></li>
-                        <li><a href="#" class="footer-link">Handphone</a></li>
-                        <li><a href="#" class="footer-link">Elektronik</a></li>
-                        <li><a href="#" class="footer-link">Properti</a></li>
+                <div>
+                    <h6 class="text-lg font-bold text-white mb-4">Kategori</h6>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="hover:text-teal-400 transition-colors">Mobil</a></li>
+                        <li><a href="#" class="hover:text-teal-400 transition-colors">Motor</a></li>
+                        <li><a href="#" class="hover:text-teal-400 transition-colors">Handphone</a></li>
+                        <li><a href="#" class="hover:text-teal-400 transition-colors">Elektronik</a></li>
+                        <li><a href="#" class="hover:text-teal-400 transition-colors">Properti</a></li>
                     </ul>
                 </div>
-                <div class="col-lg-2 col-md-6 mb-4">
-                    <h6 class="mb-3">Bantuan</h6>
-                    <ul class="list-unstyled">
-                        <li><a href="#" class="footer-link">Cara Jual</a></li>
-                        <li><a href="#" class="footer-link">Cara Beli</a></li>
-                        <li><a href="#" class="footer-link">Tips Aman</a></li>
-                        <li><a href="#" class="footer-link">FAQ</a></li>
-                        <li><a href="#" class="footer-link">Kontak</a></li>
+                <div>
+                    <h6 class="text-lg font-bold text-white mb-4">Bantuan</h6>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="hover:text-teal-400 transition-colors">Cara Jual</a></li>
+                        <li><a href="#" class="hover:text-teal-400 transition-colors">Cara Beli</a></li>
+                        <li><a href="#" class="hover:text-teal-400 transition-colors">Tips Aman</a></li>
+                        <li><a href="#" class="hover:text-teal-400 transition-colors">FAQ</a></li>
+                        <li><a href="#" class="hover:text-teal-400 transition-colors">Kontak</a></li>
                     </ul>
                 </div>
-                <div class="col-lg-2 col-md-6 mb-4">
-                    <h6 class="mb-3">Perusahaan</h6>
-                    <ul class="list-unstyled">
-                        <li><a href="#" class="footer-link">Tentang Kami</a></li>
-                        <li><a href="#" class="footer-link">Karir</a></li>
-                        <li><a href="#" class="footer-link">Blog</a></li>
-                        <li><a href="#" class="footer-link">Press</a></li>
+                <div>
+                    <h6 class="text-lg font-bold text-white mb-4">Perusahaan</h6>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="hover:text-teal-400 transition-colors">Tentang Kami</a></li>
+                        <li><a href="#" class="hover:text-teal-400 transition-colors">Karir</a></li>
+                        <li><a href="#" class="hover:text-teal-400 transition-colors">Blog</a></li>
+                        <li><a href="#" class="hover:text-teal-400 transition-colors">Press</a></li>
                     </ul>
                 </div>
-                <div class="col-lg-2 col-md-6 mb-4">
-                    <h6 class="mb-3">Legal</h6>
-                    <ul class="list-unstyled">
-                        <li><a href="#" class="footer-link">Syarat & Ketentuan</a></li>
-                        <li><a href="#" class="footer-link">Kebijakan Privasi</a></li>
-                        <li><a href="#" class="footer-link">Panduan Komunitas</a></li>
+                <div>
+                    <h6 class="text-lg font-bold text-white mb-4">Legal</h6>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="hover:text-teal-400 transition-colors">Syarat & Ketentuan</a></li>
+                        <li><a href="#" class="hover:text-teal-400 transition-colors">Kebijakan Privasi</a></li>
+                        <li><a href="#" class="hover:text-teal-400 transition-colors">Panduan Komunitas</a></li>
                     </ul>
                 </div>
             </div>
-            <hr class="my-4" style="border-color:#4a5c6a" />
-            <div class="row align-items-center">
-                <div class="col-md-6"><p class="text-muted mb-0">&copy; 2024 KF OLX. Semua hak dilindungi.</p></div>
-                <div class="col-md-6 text-md-end"><p class="text-muted mb-0">Made with <i class="fas fa-heart text-danger"></i> in Indonesia</p></div>
+            <hr class="my-8 border-gray-700">
+            <div class="flex flex-col md:flex-row items-center justify-between text-sm text-gray-500">
+                <p class="mb-2 md:mb-0">&copy; 2025 KF OLX. Semua hak dilindungi.</p>
+                <p>Made with <i class="fas fa-heart text-red-500"></i> in Indonesia</p>
             </div>
         </div>
     </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
+        AOS.init({
+            once: true,
+        });
+
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
         // Basic client-side validation style
         (function(){
             const form = document.querySelector('form');
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
+
+            function applyValidationClass(el, isValid) {
+                if (el) {
+                    el.classList.toggle('border-red-500', !isValid);
+                    el.classList.toggle('focus:border-red-500', !isValid);
+                    el.classList.toggle('focus:ring-red-500', !isValid);
+                    el.classList.toggle('border-gray-200', isValid);
+                    el.classList.toggle('focus:border-teal-400', isValid);
+                    el.classList.toggle('focus:ring-teal-200', isValid);
+                }
+            }
+
             form.addEventListener('submit', function(e){
                 let valid = true;
-                const email = document.getElementById('email');
-                const password = document.getElementById('password');
-                if (!email.value || !email.checkValidity()) { email.classList.add('is-invalid'); valid = false; } else { email.classList.remove('is-invalid'); }
-                if (!password.value) { password.classList.add('is-invalid'); valid = false; } else { password.classList.remove('is-invalid'); }
-                if (!valid) e.preventDefault();
+                
+                if (!emailInput.value.trim() || !emailInput.checkValidity()) {
+                    applyValidationClass(emailInput, false);
+                    valid = false;
+                } else {
+                    applyValidationClass(emailInput, true);
+                }
+
+                if (!passwordInput.value) {
+                    applyValidationClass(passwordInput, false);
+                    valid = false;
+                } else {
+                    applyValidationClass(passwordInput, true);
+                }
+
+                if (!valid) {
+                    e.preventDefault();
+                }
             });
         })();
     </script>
