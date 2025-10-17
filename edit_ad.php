@@ -77,7 +77,13 @@ try {
 
             // Commit transaksi
             $pdo->commit();
-            echo "<script>alert('Iklan berhasil diupdate!');window.location='my_ads.php';</script>";
+            echo "<script>
+                    Swal.fire({
+                    title: 'Data Berhasil di edit',
+                    icon: 'success',
+                    draggable: true
+                    });window.location='my_ads.php';
+                 </script>";
             exit;
 
         } catch(PDOException $e) {
@@ -102,6 +108,7 @@ try {
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Edit Iklan - KF OLX</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="sweetalert2.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 </head>
@@ -312,7 +319,9 @@ try {
             </div>
         </div>
     </footer>
-    
+    <!-- sweetaleert -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- end sweetalert -->
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
         AOS.init({

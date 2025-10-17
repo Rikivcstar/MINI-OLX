@@ -6,8 +6,11 @@ $old = ['email' => ''];
 $justRegistered = isset($_GET['registered']) && $_GET['registered'] === '1';
 $alreadyLoggedIn = current_user_id() !== null;
 
-// Jika sudah login, langsung arahkan ke beranda
-if ($alreadyLoggedIn) {
+// Jangan redirect langsung jika baru saja login (success=1)
+$justLoggedIn = isset($_GET['success']) && $_GET['success'] === '1';
+
+// Jika sudah login dan bukan baru saja login → redirect ke index
+if ($alreadyLoggedIn && !$justLoggedIn) {
     redirect('index.php');
 }
 
@@ -44,7 +47,7 @@ if (!$alreadyLoggedIn && $_SERVER['REQUEST_METHOD'] === 'POST') {
                     setcookie('remember_email', '', time() - 3600, '/');
                 }
 
-                redirect('index.php');
+                redirect('login.php?success=1');
             }
         } catch (Throwable $t) {
             $errors[] = 'Terjadi kesalahan pada server. Silakan coba lagi.';
@@ -60,7 +63,7 @@ if (!$alreadyLoggedIn && $_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>Masuk - KF OLX</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <!-- <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet"> -->
 </head>
 <body class="bg-gray-100 font-sans text-gray-800">
    <nav class="bg-white shadow-md py-4" data-aos="fade-down" data-aos-duration="1000">
@@ -230,12 +233,53 @@ if (!$alreadyLoggedIn && $_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
         </div>
     </footer>
+    <!-- Tambahkan CSS dan JS SweetAlert2 -->
+    <!-- <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
-        AOS.init({
-            once: true,
+    // Cek jika ada parameter success di URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const success = urlParams.get('success');
+
+        if (success === '1') {
+            Swal.fire({
+                title: 'Berhasil Login Dengan Akun Kamu!',
+                text: 'Selamat datang kembali di KF OLX!',
+                icon: 'success',
+                confirmButtonText: 'Lanjut ke Beranda',
+                confirmButtonColor: '#0d9488', // warna teal
+            }).then(() => {
+                // Redirect ke index.php setelah klik OK
+                window.location.href = 'index.php';
+            });
+        }
+    </script>
+
+
+    <?php
+    if(!$alreadyLoggedIn && !empty($errors)):
+    ?>
+    <script>
+        Swal.fire({
+        title: "Login Gagal",
+        html: `<ul style = "text-align:center;">
+                <?php foreach($errors as $err) : ?>
+                    <li><?php echo htmlspecialchars($err, ENT_QUOTES, 'UTF-8'); ?> </li>
+                <?php endforeach;?>    
+                </ul>`,
+        icon: "error"
         });
+    </script>
+    <?php
+    endif;
+    ?>
+    <script>
+
+
+        // AOS.init({
+        //     once: true,
+        // });
 
         const mobileMenuButton = document.getElementById('mobile-menu-button');
         const mobileMenu = document.getElementById('mobile-menu');

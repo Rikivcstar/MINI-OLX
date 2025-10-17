@@ -61,7 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $ins->execute([$name, $email, $whatsapp, $hash]);
 
                 // Redirect ke login dengan tanda berhasil
-                redirect('login.php?registered=1');
+                redirect('register.php?success=1');
             }
         } catch (Throwable $t) {
             // Tampilkan pesan generik (log detailnya di production)
@@ -262,6 +262,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </footer>
     
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+    // Cek jika ada parameter success di URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const success = urlParams.get('success');
+
+        if (success === '1') {
+            Swal.fire({
+                    title: 'Berhasil Daftar!',
+                    text: 'Akun kamu berhasil dibuat. Silakan login untuk melanjutkan.',
+                    icon: 'success',
+                    confirmButtonText: 'Ke Halaman Login',
+                    confirmButtonColor: '#0d9488'
+                }).then(() => {
+                    // Setelah klik OK, baru diarahkan ke halaman login
+                    window.location.href = 'login.php';
+                    // Hapus parameter success agar tidak muncul lagi saat reload
+                    window.history.replaceState({}, document.title, "register.php");
+
+                });
+
+        }
+    </script>
+
+
     <script>
         AOS.init({
             once: true,

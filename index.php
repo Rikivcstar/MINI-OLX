@@ -142,7 +142,7 @@ try {
         </div>
     </nav>
     
-    <section class="bg-teal-800 text-white py-16 mb-12" data-aos="fade-up" data-aos-duration="1000">
+    <section style="background-image: url(assets/banner.png);" class=" text-white py-16 mb-12" data-aos="fade-up" data-aos-duration="1000">
         <div class="container mx-auto px-4">
             <div class="flex flex-wrap items-center">
                 <div class="w-full lg:w-1/2" data-aos="fade-right" data-aos-delay="300">
@@ -278,7 +278,6 @@ try {
             </div>
         </div>
     </footer>
-
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
         AOS.init({

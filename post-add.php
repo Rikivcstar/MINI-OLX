@@ -230,6 +230,32 @@ try {
     </footer>
 
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <script>
+    // Cek jika ada parameter success di URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const success = urlParams.get('success');
+
+        if (success === '1') {
+            Swal.fire({
+                    title: 'Berhasil Daftar!',
+                    text: 'Iklan  berhasil di Tambahkan. Silakan login untuk melanjutkan.',
+                    icon: 'success',
+                    confirmButtonText: 'Ke Halaman Login',
+                    confirmButtonColor: '#67706fff'
+                }).then(() => {
+                    // Setelah klik OK, baru diarahkan ke halaman login
+                    window.location.href = 'login.php';
+                    // Hapus parameter success agar tidak muncul lagi saat reload
+                    window.history.replaceState({}, document.title, "register.php");
+
+                });
+
+        }
+    </script>
+
+
     <script>
         AOS.init({
             once: true,
