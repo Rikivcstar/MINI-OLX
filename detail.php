@@ -1,4 +1,11 @@
 <?php
+
+// WAJIB: Mulai sesi untuk mengakses $_SESSION
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+
+
 include 'config.php';
 
 $pdo = db();
@@ -34,6 +41,17 @@ try {
     $image_path = $img_row ? 'uploads/' . $img_row['image_path'] : 'assets/images/noimage.png';
 } catch(PDOException $e) {
     die("Error: " . $e->getMessage());
+}
+// Siapkan data pembeli yang aman untuk Midtrans
+$buyer_name = isset($_SESSION['user_name']) && $_SESSION['user_name'] !== '' ? $_SESSION['user_name'] : 'Customer';
+$buyer_email = isset($_SESSION['user_email']) ? (string)$_SESSION['user_email'] : '';
+if (!filter_var($buyer_email, FILTER_VALIDATE_EMAIL)) {
+    $uid = isset($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : 0;
+    $buyer_email = 'user' . ($uid ?: 'guest') . '@example.test'; // domain khusus testing
+}
+$buyer_phone = isset($_SESSION['user_phone']) ? preg_replace('/[^0-9+]/', '', (string)$_SESSION['user_phone']) : '';
+if ($buyer_phone === '' || strlen(preg_replace('/\D/','', $buyer_phone)) < 8) {
+    $buyer_phone = '081234567890'; // fallback
 }
 ?>
 <!DOCTYPE html>
@@ -154,15 +172,30 @@ try {
                         </div>
                     </div>
                     <div class="space-y-2">
-                        <?php if (isset($_SESSION['user_id']) && (int)$_SESSION['user_id'] !== (int)$ad['user_id'] && !empty($ad['whatsapp'])): ?>
-                            <?php $wa = '62' . ltrim(preg_replace('/[^0-9]/', '', (string)$ad['whatsapp']), '0'); ?>
-                            <a target="_blank" class="w-full block text-center bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-4 rounded-lg transition-colors" href="https://wa.me/<?php echo e($wa); ?>?text=<?php echo urlencode('Halo, saya tertarik dengan iklan Anda: ' . $ad['title']); ?>">
-                                <i class="fab fa-whatsapp"></i> Hubungi via WhatsApp
-                            </a>
-                        <?php else: ?>
-                            <button class="w-full block text-center bg-gray-300 text-gray-600 font-semibold py-3 px-4 rounded-lg cursor-not-allowed" disabled>
-                                <i class="fab fa-whatsapp"></i> WhatsApp tidak tersedia
+                        <?php if (isset($_SESSION['user_id']) && (int)$_SESSION['user_id'] !== (int)$ad['user_id']): ?>
+                            <?php $wa = !empty($ad['whatsapp']) ? '62' . ltrim(preg_replace('/[^0-9]/', '', (string)$ad['whatsapp']), '0') : null; ?>
+                            <?php if ($wa): ?>
+                                <a target="_blank" class="w-full block text-center bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-4 rounded-lg transition-colors" href="https://wa.me/<?php echo e($wa); ?>?text=<?php echo urlencode('Halo, saya tertarik dengan iklan Anda: ' . $ad['title']); ?>">
+                                    <i class="fab fa-whatsapp"></i> Hubungi via WhatsApp
+                                </a>
+                            <?php else: ?>
+                                <button class="w-full block text-center bg-gray-300 text-gray-600 font-semibold py-3 px-4 rounded-lg cursor-not-allowed" disabled>
+                                    <i class="fab fa-whatsapp"></i> WhatsApp tidak tersedia
+                                </button>
+                            <?php endif; ?>
+                            <button class="w-full mt-3 block text-center bg-yellow-400 hover:bg-yellow-500 text-teal-800 font-semibold py-3 px-4 rounded-lg transition-colors" id="pay-button">
+                                <i class="fas fa-shopping-cart"></i> Beli Sekarang
                             </button>
+                        <?php else: ?>
+                            <?php if (!isset($_SESSION['user_id'])): ?>
+                                <a href="login.php" class="w-full block text-center bg-teal-600 hover:bg-teal-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors">
+                                    <i class="fas fa-sign-in-alt"></i> Masuk untuk membeli
+                                </a>
+                            <?php else: ?>
+                                <button class="w-full block text-center bg-gray-300 text-gray-600 font-semibold py-3 px-4 rounded-lg cursor-not-allowed" disabled>
+                                    <i class="fas fa-info-circle"></i> Anda tidak dapat membeli iklan Anda sendiri
+                                </button>
+                            <?php endif; ?>
                         <?php endif; ?>
                     </div>
                 </div>
@@ -234,16 +267,96 @@ try {
     </footer>
 
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <!-- Midtrans Payment Gateway -->
+    <script type="text/javascript" src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="SB-Mid-client-JSewxPz5Dun-I2pj"></script>
     <script>
-        AOS.init({
-            once: true,
+        AOS.init();
+        document.getElementById('mobile-menu-button').addEventListener('click', function() {
+            document.getElementById('mobile-menu').classList.toggle('hidden');
         });
 
-        // Toggle mobile menu
-        const mobileMenuButton = document.getElementById('mobile-menu-button');
-        const mobileMenu = document.getElementById('mobile-menu');
-        mobileMenuButton.addEventListener('click', () => {
-            mobileMenu.classList.toggle('hidden');
+        // Midtrans Payment Handler
+        const payBtnEl = document.getElementById('pay-button');
+        if (payBtnEl) payBtnEl.addEventListener('click', function() {
+            // Show loading state
+            const payButton = document.getElementById('pay-button');
+            const originalText = payButton.innerHTML;
+            payButton.disabled = true;
+            payButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
+
+            
+            
+            // Prepare transaction data
+            const transactionDetails = {
+                transaction_details: {
+                    order_id: 'ORDER-' + Math.round((new Date()).getTime() / 1000) + '-' + <?php echo $id; ?>,
+                    gross_amount: <?php echo (float)$ad['price']; ?>
+                },
+                item_details: [{
+                    id: <?php echo $id; ?>,
+                    price: <?php echo (float)$ad['price']; ?>,
+                    quantity: 1,
+                    name: '<?php echo addslashes($ad['title']); ?>'
+                }],
+                customer_details: {
+                    first_name: '<?php echo addslashes($buyer_name); ?>',
+                    email: '<?php echo addslashes($buyer_email); ?>',
+                    phone: '<?php echo addslashes($buyer_phone); ?>'
+                }
+            };
+
+            // Send request to your payment processing endpoint
+            fetch('process-payment.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(transactionDetails)
+            })
+            .then(async res => {
+                let payload;
+                try { payload = await res.json(); } catch(e) { payload = null; }
+                if (!res.ok) {
+                    const msg = payload && payload.message ? payload.message : ('HTTP ' + res.status);
+                    throw new Error(msg);
+                }
+                return payload;
+            })
+            .then(response => {
+                if(response.token) {
+                    // Open payment popup
+                    window.snap.pay(response.token, {
+                        onSuccess: function(result) {
+                            alert('Pembayaran berhasil!');
+                            const oid = (result && result.order_id) ? result.order_id : (response.order_id || '');
+                            window.location.href = 'payment-success.php' + (oid ? ('?order_id=' + encodeURIComponent(oid)) : '');
+                        },
+                        onPending: function(result) {
+                            alert('Menunggu pembayaran Anda!');
+                            const oid = (result && result.order_id) ? result.order_id : (response.order_id || '');
+                            window.location.href = 'payment-pending.php' + (oid ? ('?order_id=' + encodeURIComponent(oid)) : '');
+                        },
+                        onError: function(result) {
+                            alert('Pembayaran gagal!');
+                            console.log(result);
+                        },
+                        onClose: function() {
+                            alert('Anda menutup popup pembayaran tanpa menyelesaikan pembayaran');
+                        }
+                    });
+                } else {
+                    throw new Error('Token pembayaran tidak valid');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Terjadi kesalahan saat memproses pembayaran: ' + (error && error.message ? error.message : 'Tidak diketahui'));
+            })
+            .finally(() => {
+                // Reset button state
+                payButton.disabled = false;
+                payButton.innerHTML = originalText;
+            });
         });
     </script>
 </body>

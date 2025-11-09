@@ -7,6 +7,7 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+
 // Konfigurasi database
 $DB_CONFIG = [
     'host' => '127.0.0.1',   // atau 'localhost'
@@ -56,8 +57,16 @@ function db(): PDO {
 /**
  * Helper untuk output aman ke HTML
  */
-function e(?string $value): string {
-    return htmlspecialchars((string)$value, ENT_QUOTES, 'UTF-8');
+// >>> Blok ini yang dipertahankan dan dimodifikasi <<<
+if (!function_exists('e')) { // <-- Tambahkan pengecekan ini
+    /**
+     * Helper untuk output aman ke HTML
+     */
+    function e(?string $value): string {
+        // Hati-hati dengan tipe data di sini. Pastikan PHP version 7.1+ untuk nullable string
+        // Ubah menjadi yang lebih aman untuk kompatibilitas:
+        return htmlspecialchars((string)$value ?? '', ENT_QUOTES, 'UTF-8'); 
+    }
 }
 
 /**

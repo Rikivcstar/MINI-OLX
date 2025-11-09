@@ -200,7 +200,7 @@ try {
     </section>
 
     <section class="container mx-auto px-4 mb-12" data-aos="fade-up" data-aos-delay="200">
-        <h2 class="text-3xl font-bold mb-6" data-aos="fade-up">Iklan Terbaru</h2>
+        <h2 class="text-3xl font-bold mb-6 text-center " data-aos="fade-up">Iklan Terbaru</h2>
         <?php
         $info = [];
         if (isset($_GET['title']) && $_GET['title'] != '') $info[] = 'Judul: <b>' . e($_GET['title']) . '</b>';
@@ -209,12 +209,12 @@ try {
         if ($info) echo '<p class="text-gray-600 mb-4" data-aos="fade-right">' . implode(', ', $info) . '</p>';
         ?>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 my-20">
             <?php foreach ($ads as $row): ?>
                 <a class="block no-underline" href="detail.php?id=<?php echo (int)$row['id']; ?>" data-aos="fade-up">
                     <div class="bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden">
                         <?php $img = $row['image_path'] ? 'uploads/' . $row['image_path'] : 'assets/images/noimage.png'; ?>
-                        <img class="ad-image bg-gray-200" src="<?php echo e($img); ?>" alt="Gambar Iklan">
+                        <img class="ad-image bg-gray-200" src="<?php echo e($img); ?>" alt="Gambar Iklan" style="height: 300px; background-size: cover; background-repeat: no-repeat;">
                         <div class="p-4">
                             <h3 class="text-lg font-semibold text-gray-800 mb-1"><?php echo e($row['title']); ?></h3>
                             <div class="text-xl font-bold text-teal-800 mb-2">Rp <?php echo number_format((float)$row['price'], 0, ',', '.'); ?></div>
